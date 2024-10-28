@@ -98,7 +98,7 @@ public class NewBehaviourScript : MonoBehaviour
 
     private void UpdateIdle()
     {
-        if (xInput != 0)
+        if (!grounded || xInput != 0)
         {
             stateComplete = true;
         }
