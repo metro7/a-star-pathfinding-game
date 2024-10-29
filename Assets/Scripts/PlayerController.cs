@@ -15,35 +15,57 @@ public class NewBehaviourScript : MonoBehaviour
     public Rigidbody2D rb;
     public BoxCollider2D groundCheck;
     public LayerMask groundMask;
+    public GameObject fallDetector;
     
-
     public float moveSpeed;
     public float jumpHeight;
-    public float acceleration;
-    
     public bool grounded;
-    
+    private Vector3 respawnPoint;
+    float xInput;
     [Range(0f, 1f)]
     public float groundDecay;
 
-    float xInput;
-    
+    [SerializeField] private float dashVelocity;
+    [SerializeField] private float dashTime;
+    [SerializeField] private float dashCooldown;
+    private Vector2 dashDirection;
+    private bool isDashing;
+    private bool canDash = true;
 
+
+    private void Start()
+    {
+        respawnPoint = transform.position;
+    }
 
     // Update is called once per frame
     void Update()
     {
+        if(isDashing)
+        {
+            return;
+        }
         CheckInput();
         HandleJump();
+        CheckDash();
         if(stateComplete)
         {
             SelectState();
         }
         UpdateState();
+
+        UpdateFallDetectorPosition();
+
+
+
     }
 
     private void FixedUpdate()
     {
+        if (isDashing)
+        {
+            return;
+        }
         CheckGround();
         ApplyFriction();
         HandleMovement();
@@ -63,7 +85,7 @@ public class NewBehaviourScript : MonoBehaviour
                 UpdateAirborne();
                 break;
             case PlayerState.Dashing:
-
+                UpdateDashing();
                 break;
             case PlayerState.Attacking:
 
@@ -77,7 +99,7 @@ public class NewBehaviourScript : MonoBehaviour
     {
         stateComplete = false;
 
-        if(grounded)
+        if(grounded && !isDashing)
         {
             if (xInput == 0)
             {
@@ -90,10 +112,17 @@ public class NewBehaviourScript : MonoBehaviour
                 StartRunning();
             }
         }
-        else { 
+        else if(!grounded && !isDashing)
+        { 
             state = PlayerState.Airborne;
             StartAirborne();
+        } 
+        else if (isDashing)
+        {
+            state = PlayerState.Dashing;
+            StartDashing();
         }
+
     }
 
     private void UpdateIdle()
@@ -120,6 +149,14 @@ public class NewBehaviourScript : MonoBehaviour
         }
     }
 
+    private void UpdateDashing()
+    {
+        if(!isDashing)
+        {
+            stateComplete = true;
+        }
+    }
+
     private void StartIdle()
     {
         animator.Play("idle");
@@ -130,10 +167,14 @@ public class NewBehaviourScript : MonoBehaviour
         animator.Play("running");
     }
 
-
     private void StartAirborne()
     {
         animator.Play("jump");
+    }
+
+    private void StartDashing()
+    {
+        animator.Play("dash");
     }
 
     private void CheckInput()
@@ -147,15 +188,37 @@ public class NewBehaviourScript : MonoBehaviour
         if(Mathf.Abs(xInput) > 0)
         {
 
-            // Increments velocity by acceleration
-            float increment = xInput * acceleration;
-            float newSpeed = Mathf.Clamp(rb.velocity.x + increment, -moveSpeed, moveSpeed);
-
-            rb.velocity = new Vector2(newSpeed, rb.velocity.y);
+            rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y);
 
             DirectionInput();
         }
     }
+
+    private void CheckDash()
+    {
+        if(Input.GetKeyDown(KeyCode.LeftShift) && canDash == true)
+        {
+
+            StartCoroutine(Dash());
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * dashVelocity, 0f);
+        SelectState();
+        yield return new WaitForSeconds(dashTime);
+        rb.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashCooldown);
+        SelectState();
+        canDash = true;
+    }
+
 
     private void DirectionInput()
     {
@@ -182,6 +245,19 @@ public class NewBehaviourScript : MonoBehaviour
         if (grounded && xInput == 0 && rb.velocity.y <= 0) 
         {
             rb.velocity *= groundDecay;
+        }
+    }
+
+    private void UpdateFallDetectorPosition()
+    {
+        fallDetector.transform.position = new Vector2(transform.position.x, fallDetector.transform.position.y);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "FallDetector")
+        {
+            transform.position = respawnPoint;
         }
     }
 
