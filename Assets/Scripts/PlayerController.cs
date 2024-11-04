@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NewBehaviourScript : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class NewBehaviourScript : MonoBehaviour
     
     public float moveSpeed;
     public float jumpHeight;
-    public bool grounded;
+    private bool grounded;
     private Vector3 respawnPoint;
     float xInput;
     [Range(0f, 1f)]
@@ -28,10 +29,14 @@ public class NewBehaviourScript : MonoBehaviour
     [SerializeField] private float dashVelocity;
     [SerializeField] private float dashTime;
     [SerializeField] private float dashCooldown;
-    private Vector2 dashDirection;
+    //private Vector2 dashDirection;
     private bool isDashing;
     private bool canDash = true;
 
+    [SerializeField] private float attackCooldown;
+    private float attackTime = 0.3f;
+    private bool isAttacking;
+    private bool canAttack = true;
 
     private void Start()
     {
@@ -46,9 +51,10 @@ public class NewBehaviourScript : MonoBehaviour
             return;
         }
         CheckInput();
-        HandleJump();
         CheckDash();
-        if(stateComplete)
+        CheckAttack();
+        HandleJump();
+        if (stateComplete)
         {
             SelectState();
         }
@@ -88,7 +94,7 @@ public class NewBehaviourScript : MonoBehaviour
                 UpdateDashing();
                 break;
             case PlayerState.Attacking:
-
+                UpdateAttacking();
                 break;
 
         }
@@ -121,6 +127,11 @@ public class NewBehaviourScript : MonoBehaviour
         {
             state = PlayerState.Dashing;
             StartDashing();
+        }
+        if (isAttacking)
+        {
+            state = PlayerState.Attacking;
+            StartAttacking();
         }
 
     }
@@ -157,6 +168,14 @@ public class NewBehaviourScript : MonoBehaviour
         }
     }
 
+    private void UpdateAttacking()
+    {
+        if(!isAttacking)
+        {
+            stateComplete = true;
+        }
+    }
+
     private void StartIdle()
     {
         animator.Play("idle");
@@ -175,6 +194,11 @@ public class NewBehaviourScript : MonoBehaviour
     private void StartDashing()
     {
         animator.Play("dash");
+    }
+
+    private void StartAttacking()
+    {
+        animator.Play("attack");
     }
 
     private void CheckInput()
@@ -219,6 +243,17 @@ public class NewBehaviourScript : MonoBehaviour
         canDash = true;
     }
 
+    private IEnumerator Attack()
+    {
+        canAttack = false;
+        isAttacking = true;
+        SelectState();
+        yield return new WaitForSeconds(attackTime);
+        isAttacking = false;
+        yield return new WaitForSeconds(attackCooldown);
+        SelectState();
+        canAttack = true;
+    }
 
     private void DirectionInput()
     {
@@ -233,6 +268,15 @@ public class NewBehaviourScript : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
         }
     }
+
+    private void CheckAttack()
+    {
+        if (Input.GetMouseButtonDown(0) && canAttack == true)
+        {
+            StartCoroutine(Attack());
+        }
+    }
+
 
 
     private void CheckGround()
@@ -259,6 +303,17 @@ public class NewBehaviourScript : MonoBehaviour
         {
             transform.position = respawnPoint;
         }
+
+        if(collision.tag == "NextLevel")
+        {
+            ResetScene();
+        }
     }
+
+    private void ResetScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    
 
 }
