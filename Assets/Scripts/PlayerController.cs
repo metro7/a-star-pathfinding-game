@@ -16,7 +16,9 @@ public class NewBehaviourScript : MonoBehaviour
     public Rigidbody2D rb;
     public BoxCollider2D groundCheck;
     public LayerMask groundMask;
+    public LayerMask enemies;
     public GameObject fallDetector;
+    public GameObject attackPoint;
     
     public float moveSpeed;
     public float jumpHeight;
@@ -25,6 +27,7 @@ public class NewBehaviourScript : MonoBehaviour
     float xInput;
     [Range(0f, 1f)]
     public float groundDecay;
+    public float attackRadius;
 
     [SerializeField] private float dashVelocity;
     [SerializeField] private float dashTime;
@@ -248,11 +251,28 @@ public class NewBehaviourScript : MonoBehaviour
         canAttack = false;
         isAttacking = true;
         SelectState();
+        AttackActive();
         yield return new WaitForSeconds(attackTime);
         isAttacking = false;
         yield return new WaitForSeconds(attackCooldown);
         SelectState();
         canAttack = true;
+    }
+
+    public void AttackActive()
+    {
+        Collider2D[] enemy = Physics2D.OverlapCircleAll(attackPoint.transform.position, attackRadius, enemies);
+
+        foreach (Collider2D enemyGameObject in enemy)
+        {
+            Debug.Log("Hit Enemy");
+        }
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(attackPoint.transform.position, attackRadius);
     }
 
     private void DirectionInput()
