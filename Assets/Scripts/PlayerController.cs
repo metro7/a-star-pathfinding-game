@@ -265,7 +265,14 @@ public class PlayerController : MonoBehaviour
 
         foreach (Collider2D enemyGameObject in enemy)
         {
-            Destroy(enemyGameObject.gameObject);
+            if(enemyGameObject.GetComponent<EnemyGroundController>() != null) 
+            {
+                enemyGameObject.GetComponent<EnemyGroundController>().TakeHit();
+            }
+            if(enemyGameObject.GetComponent<EnemyFlyingController>() != null)
+            {
+                enemyGameObject.GetComponent<EnemyFlyingController>().TakeHit();
+            }
             Debug.Log("Hit Enemy");
         }
 

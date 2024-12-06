@@ -116,6 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1879404366455241410}
   - component: {fileID: 7523579982637219807}
+  - component: {fileID: 5079349486324116318}
   m_Layer: 10
   m_Name: FrogEnemy
   m_TagString: Enemy
@@ -184,3 +185,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.45681477, y: 0.36951733}
   m_EdgeRadius: 0
+--- !u!114 &5079349486324116318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8432420809462360328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050470eb94df30a4b8ead0484ac6f23d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentNode: {fileID: 0}
+  path: []
+  animator: {fileID: 4035907541733324229}
+  moveSpeed: 0
