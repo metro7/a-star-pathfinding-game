@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class NewBehaviourScript : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     enum PlayerState { Idle, Running, Airborne, Dashing, Attacking}
 
@@ -265,6 +265,7 @@ public class NewBehaviourScript : MonoBehaviour
 
         foreach (Collider2D enemyGameObject in enemy)
         {
+            Destroy(enemyGameObject.gameObject);
             Debug.Log("Hit Enemy");
         }
 
@@ -319,14 +320,23 @@ public class NewBehaviourScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if(collision.tag == "Enemy")
+        {
+            Debug.Log("Enemy collision");
+            ResetScene();
+            // Pull up death screen
+        }
+
         if(collision.tag == "FallDetector")
         {
             transform.position = respawnPoint;
+            // Pull up death screen
         }
 
         if(collision.tag == "NextLevel")
         {
             ResetScene();
+            // Pull up win screen
         }
     }
 
