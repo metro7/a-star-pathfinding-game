@@ -329,21 +329,20 @@ public class PlayerController : MonoBehaviour
     {
         if(collision.tag == "Enemy")
         {
-            Debug.Log("Enemy collision");
             ResetScene();
-            // Pull up death screen
+            // Pull up death screen then reset scene
         }
 
         if(collision.tag == "FallDetector")
         {
             transform.position = respawnPoint;
-            // Pull up death screen
+            // Pull up death screen then reset scene
         }
 
-        if(collision.tag == "NextLevel")
+        if (collision.tag == "NextLevel")
         {
-            ResetScene();
-            // Pull up win screen
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            respawnPoint = transform.position;
         }
     }
 
