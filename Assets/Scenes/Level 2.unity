@@ -10850,6 +10850,10 @@ PrefabInstance:
       value: 1.75
       objectReference: {fileID: 0}
     - target: {fileID: 5079349486324116318, guid: 530b8ae0b5e009e4a8ea105005f9e47d, type: 3}
+      propertyPath: nodeParent
+      value: 
+      objectReference: {fileID: 357817625}
+    - target: {fileID: 5079349486324116318, guid: 530b8ae0b5e009e4a8ea105005f9e47d, type: 3}
       propertyPath: currentNode
       value: 
       objectReference: {fileID: 1209355188}

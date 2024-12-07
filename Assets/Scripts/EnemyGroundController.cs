@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class EnemyGroundController : MonoBehaviour
 {
+    public GameObject nodeParent;
     public Node currentNode;
     public List<Node> path = new List<Node>();
 
@@ -68,10 +69,13 @@ public class EnemyGroundController : MonoBehaviour
 
     public void TakeHit()
     {
+        
         this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         isAlive = false;
         animator.Play("Death");
+        Destroy(nodeParent);
         Destroy(gameObject, 1f);
+        
     }
 
 }

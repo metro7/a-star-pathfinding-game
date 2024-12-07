@@ -14,7 +14,7 @@ public class MainMenu : MonoBehaviour
 
     public void InstructionsMenu()
     {
-        SceneManager.LoadSceneAsync(5);
+        SceneManager.LoadSceneAsync(4);
     }
 
     public void QuitButton()

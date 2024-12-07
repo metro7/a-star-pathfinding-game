@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
     private bool isAttacking;
     private bool canAttack = true;
 
+    private int currentSceneIndex;
+
     private void Start()
     {
         respawnPoint = transform.position;
@@ -273,7 +275,6 @@ public class PlayerController : MonoBehaviour
             {
                 enemyGameObject.GetComponent<EnemyFlyingController>().TakeHit();
             }
-            Debug.Log("Hit Enemy");
         }
 
     }
@@ -329,14 +330,12 @@ public class PlayerController : MonoBehaviour
     {
         if(collision.tag == "Enemy")
         {
-            ResetScene();
-            // Pull up death screen then reset scene
+            PlayerDied();
         }
 
         if(collision.tag == "FallDetector")
         {
-            transform.position = respawnPoint;
-            // Pull up death screen then reset scene
+            PlayerDied();
         }
 
         if (collision.tag == "NextLevel")
@@ -345,11 +344,10 @@ public class PlayerController : MonoBehaviour
             respawnPoint = transform.position;
         }
     }
-
-    private void ResetScene()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
     
 
+    private void PlayerDied()
+    {
+        SceneManager.LoadScene(5);
+    }
 }
