@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class LoseScreen : MonoBehaviour
 {
-    private PlayerController playerController;
+    
     public void Respawn()
     {
         SceneManager.LoadSceneAsync(1);
